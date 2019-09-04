@@ -1,20 +1,22 @@
-介绍
----
+## 介绍
 文件读取常见的通常有两种种方式：
-1、文件字节流方式java.io.BufferedInputStream
-2、文件频道方式java.nio.channels.FileChannel
+1. 文件字节流方式java.io.BufferedInputStream
+2. 文件频道方式java.nio.channels.FileChannel
+
 但文件一旦是超大文件，如超过2G以上，那么就会出现内存溢出异常（Exception in thread "main" java.lang.OutOfMemoryError: Required array size too large），那么如何才能解决这个问题呢？有经验的同学会注意到MappedByteBuffer这个类，它正是内存文件映射mmap机制在java上的实现，它在读取超大文件上会比前两者性能高，不过不是简单地使用这个类就可以实现超大文件的读取，所以针对这种场景，笔者封装了组件LargeFileReader。
-组件亮点
----
-一、关于复用性：
+
+## 组件亮点
+1. 关于复用性：
 	大文件读取需求逻辑可复用，所以抽象成组件LargeFileReader，以回调方式扩展支持读取后的个性化需求；
-二、关于扩展性：
+2. 关于扩展性：
 	采用builder模式，支持线程数、字符集、缓冲区大小等个性配置；
-三、关于性能：
-	1、MappedByteBuffer方式比BufferedReader等普通IO方式更高效，尤其是大文件；
-	2、多线程拆分大文件，分片读取，充分利用多核CPU并行处理
-使用方法
----
+3. 关于性能：
+
+	1). MappedByteBuffer方式比BufferedReader等普通IO方式更高效，尤其是大文件；
+	
+	2). 多线程拆分大文件，分片读取，充分利用多核CPU并行处理
+
+## 使用方法
 ```java
 LargeFileReader.Builder builder = new LargeFileReader.Builder("res" + File.separator + "input.txt");
 builder.threadSize(5).charset("UTF-8").bufferSize(1024 * 1024);
@@ -41,8 +43,8 @@ hugeFileReader.setOnReadFileListener(new OnReadFileListener() {
 });
 hugeFileReader.execute();
 ```
-源码分析（重点关注代码注释）
----
+
+## 源码分析（重点关注代码注释）
 ```java
 /**
  * 大文件读取器，内存有限，因此采用分片读取方式，因时间换空间
@@ -441,6 +443,6 @@ public class LargeFileReader {
 }
 
 ```
-源码及Demo
----
+
+## 源码及Demo
 详见代码
